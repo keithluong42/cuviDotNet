@@ -7,6 +7,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CUVI", "CUVI\CUVI.vcxproj",
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "tester", "tester\tester.vbproj", "{4EDAC306-486E-4062-A3BD-7FAF52C260C6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1B62C2F2-9B72-4F60-8604-4657249D5D79}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
