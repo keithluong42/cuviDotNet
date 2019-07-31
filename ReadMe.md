@@ -11,8 +11,3 @@
 5.	Add a reference to the CUVI project from the application
 6.	Import it in code as any other reference
 7.	Refer to CUVI/CUVI/cuviLib.h for class and function definitions
-
-
-###Notes
-* Blue buttons are a work in progress
-* Takes images for I/O as byte array
