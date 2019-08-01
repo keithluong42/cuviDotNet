@@ -7,13 +7,13 @@ Public Class Form1
     Dim cuviGT As CuviGeometryTransform
 
     Dim inData As Byte()
-    Dim inData2 As Byte()
-    Dim img2 As Byte()
-    Dim img32f As Byte()
-    Dim inData32f As Single()
     Dim outData As Byte()
-    Dim outData32f As Single()
+    Dim img2 As Byte()
+    Dim inImgData32 As Byte()
+    Dim inImgData32_2 As Byte()
+    Dim outImgData32 As Byte()
 
+    Dim img32f As Single()
     Dim histogram As UInt32()
     Dim histSize As Integer
 
@@ -33,7 +33,11 @@ Public Class Form1
         rect = New Rectangle(0, 0, 3384, 2708)
         outData = New Byte(cuviColor.outImgSize) {}
         img2 = New Byte(cuviColor.outImgSize) {}
-        img32f = New Byte(cuviColor.outImgSize * 4) {}
+        inImgData32 = New Byte(cuviAL.outImgSize32f) {}
+        inImgData32_2 = New Byte(cuviAL.outImgSize32f) {}
+        outImgData32 = New Byte(cuviAL.outImgSize32f) {}
+        img32f = New Single(cuviAL.outImgSize) {}
+
 
         inData = My.Computer.FileSystem.ReadAllBytes("datasets/Fluorescence bytes")
         bmp = New Bitmap(3384, 2708, PixelFormat.Format24bppRgb)
@@ -44,6 +48,7 @@ Public Class Form1
         PictureBox1.Image = bmp
 
         'Creating second image for testing
+        Dim inData2 As Byte()
         inData2 = My.Computer.FileSystem.ReadAllBytes("datasets/Brightfield bytes")
         cuviColor.DemosaicBytes(inData2(0), img2(0))
 
@@ -132,9 +137,7 @@ Public Class Form1
 
     Private Sub Button9_Click(sender As Object, e As EventArgs) Handles btnCbrt.Click
         GetBytes()
-        inData32f = New Single(cuviAL.outImgSize) {}
-        'cuviAL.Img8to32(inData(0), inData32f(0))
-        cuviAL.cbrt(inData(0), outData(0), True)
+        cuviAL.cbrt(inData(0), outData(0))
         SetBytes()
     End Sub
 
@@ -178,8 +181,23 @@ Public Class Form1
 
     Private Sub Button3_Click_1(sender As Object, e As EventArgs) Handles Button3.Click
         GetBytes()
-        cuviAL.Exp(inData(0), outData(0), False)
+
+        cuviAL.UseFloats(True)
+        cuviAL.ImgTo32(inData(0), inImgData32(0))
+        cuviAL.ImgTo32(img2(0), inImgData32_2(0))
+        cuviAL.Exp(inImgData32(0), inImgData32(0))
+        cuviAL.FloatsToImg(inImgData32(0), outData(0))
+        cuviAL.Add(inImgData32(0), inImgData32_2(0), inImgData32(0))
+        cuviAL.FloatsToImg(inImgData32(0), outData(0))
+        cuviAL.UseFloats(False)
+        'bytesToFloats()
 
         SetBytes()
+    End Sub
+
+    Private Sub bytesToFloats()
+        For i As Integer = 0 To inImgData32.Length - 5 Step 4
+            img32f(i / 4) = BitConverter.ToSingle(inImgData32, i)
+        Next
     End Sub
 End Class

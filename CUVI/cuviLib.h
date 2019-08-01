@@ -3,6 +3,7 @@
 namespace cuviLib {
 	public ref class CUVI {
 		public:
+			int width, height;
 			int outImgSize;
 			int histBinCount;
 			CUVI();
@@ -11,8 +12,8 @@ namespace cuviLib {
 			void SetSize(int w, int h);
 			int GetHistSize(unsigned char %inImgBytes);
 
+
 		protected:
-			int width, height;
 			int inImgSize;
 			unsigned char *inBytes, *outBytes;
 			unsigned char *inBytes1, *inBytes2;	//For 2 image operations
@@ -25,6 +26,8 @@ namespace cuviLib {
 			void GetBytes(unsigned char %inImgBytes, int length);
 			void GetBytes(unsigned char %inData1, unsigned char %inData2);
 			void SetBytes(unsigned char %outImgBytes);
+			void SetBytes(unsigned char %outImgBytes, int length);
+			void SetFloats(unsigned char %outFloats);
 			void Free();
 	};
 
@@ -45,13 +48,15 @@ namespace cuviLib {
 			int Abs(unsigned char %inBytes, unsigned char %outBytes);
 			int AbsDiff(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Add(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
-			int cbrt(unsigned char %inData, unsigned char %outImgBytes, bool floatOut);
+			int cbrt(unsigned char %inData, unsigned char %outImgBytes);
 			int NOT(unsigned char %inImgBytes, unsigned char %outImgBytes);
 			int AND(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Multiply(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Multiply(unsigned char %img1, int scalar, unsigned char %outImgBytes);
 			int Divide(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
-			int Exp(unsigned char %inImgBytes, unsigned char %outImgBytes, bool floatOut);
+			int Exp(unsigned char %inImgBytes, unsigned char %outImgBytes);
+			int ImgTo32(unsigned char %inImgBytes, unsigned char %outFloats);
+			int FloatsToImg(unsigned char %inImgBytes32, unsigned char %outImgBytes);
 			void UseFloats(bool set);
 			bool IsUsingFloats();
 

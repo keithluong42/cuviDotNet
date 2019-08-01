@@ -139,6 +139,18 @@ void CUVI::SetBytes(unsigned char %outImgBytes) {
 	memcpy(data, outBytes, outImgSize);
 }
 
+void CUVI::SetBytes(unsigned char %outImgBytes, int length) {
+	pin_ptr<unsigned char> data = &outImgBytes;
+
+	memcpy(data, outBytes, length);
+}
+
+void CUVI::SetFloats(unsigned char %outFloats) {
+	pin_ptr<unsigned char> data = &outFloats;
+
+	memcpy(data, outBytes, outImgSize * 4);
+}
+
 void CUVI::Free() {
 	if (inBytes != NULL) {
 		free(inBytes);
