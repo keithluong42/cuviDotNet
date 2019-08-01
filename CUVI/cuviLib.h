@@ -44,7 +44,7 @@ namespace cuviLib {
 			unsigned char *img32f;
 			int outImgSize32f;
 
-			CuviArithmeticLogical(int w, int h);
+			CuviArithmeticLogical(int w, int h, int channels);
 			int Abs(unsigned char %inBytes, unsigned char %outBytes);
 			int AbsDiff(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Add(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
@@ -78,6 +78,7 @@ namespace cuviLib {
 
 		private:
 			bool usingFloats;
+			int numChannels;
 	};
 
 	public ref class CuviGeometryTransform : public CUVI {

@@ -11,13 +11,14 @@
 using namespace cuviLib;
 using namespace std;
 
-CuviArithmeticLogical::CuviArithmeticLogical(int w, int h) {
+CuviArithmeticLogical::CuviArithmeticLogical(int w, int h, int channels) {
 	width = w;
 	height = h;
+	numChannels = channels;
 	inImgSize = width * height * sizeof(unsigned char);
-	outImgSize = inImgSize * 3;
+	outImgSize = inImgSize * numChannels;
 	outImgSize32f = outImgSize * 4;
-	CPUinputPitch = bytesPerPixel * width; // edit this only if CPU pitch is different than width of image in bytes
+	CPUinputPitch = bytesPerPixel * width * numChannels; // edit this only if CPU pitch is different than width of image in bytes
 	usingFloats = false;
 }
 
@@ -31,20 +32,20 @@ int CuviArithmeticLogical::Abs(unsigned char %inData, unsigned char %outImgBytes
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::abs(image, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -61,22 +62,22 @@ int CuviArithmeticLogical::AbsDiff(unsigned char %img1, unsigned char %img2, uns
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::absDiff(image1,image2,output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -93,22 +94,22 @@ int CuviArithmeticLogical::Add(unsigned char %img1, unsigned char %img2, unsigne
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	output = image1 + image2;
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	Free();
@@ -124,20 +125,20 @@ int CuviArithmeticLogical::Add(unsigned char %inImageBytes, double val, unsigned
 
 	//Create CuviImages and fill with data
 	CuviImage image, output;
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	cuvi::arithmeticLogical::add(image, val, output);
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	Free();
@@ -155,8 +156,8 @@ int CuviArithmeticLogical::cbrt(unsigned char %inData, unsigned char %outImgByte
 	//Create a CuvuImage and fill it with data
 	CuviImage image;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	CuviImage	image32f(image.size(), CUVI_DEPTH_32F, image.channels());
 	
@@ -165,14 +166,14 @@ int CuviArithmeticLogical::cbrt(unsigned char %inData, unsigned char %outImgByte
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = image32f.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = image32f.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		CuviImage output(image.size(), CUVI_DEPTH_8U, image.channels());
 		status = cuvi::dataExchange::convertScale(image32f, output, 1.0f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -192,14 +193,14 @@ int CuviArithmeticLogical::Ceil(unsigned char %inImgBytes, unsigned char %outImg
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::ceil(image, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	pin_ptr<unsigned char> outPtr = &outImgBytes;
 	outBytes = (unsigned char*)malloc(outImgSize32f);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetFloats(outImgBytes);
 
 	Free();
@@ -219,14 +220,14 @@ if (!usingFloats)
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::floor(image, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	pin_ptr<unsigned char> outPtr = &outImgBytes;
 	outBytes = (unsigned char*)malloc(outImgSize32f);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetFloats(outImgBytes);
 
 	Free();
@@ -246,14 +247,14 @@ int CuviArithmeticLogical::NOT(unsigned char %inImgBytes, unsigned char %outImgB
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::NOT(image, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 
 
@@ -273,15 +274,15 @@ int CuviArithmeticLogical::AND(unsigned char %img1, unsigned char %img2, unsigne
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	output = image1 & image2;
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 	
 	Free();
@@ -300,15 +301,15 @@ int CuviArithmeticLogical::XOR(unsigned char %img1, unsigned char %img2, unsigne
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	output = image1 ^ image2;
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 
 	Free();
@@ -327,15 +328,15 @@ int CuviArithmeticLogical::OR(unsigned char %img1, unsigned char %img2, unsigned
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	output = image1 | image2;
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 	
 	Free();
@@ -352,22 +353,22 @@ int CuviArithmeticLogical::Pow(unsigned char %inImgBytes, long power, unsigned c
 	//Create a CuvuImage and fill it with data
 	CuviImage image, image32f;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::pow(image, power, image32f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = image32f.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = image32f.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		CuviImage output(image.size(), CUVI_DEPTH_8U, image.channels());
 		status = cuvi::dataExchange::convertScale(image32f, output, 1.0f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -388,14 +389,14 @@ int CuviArithmeticLogical::Round(unsigned char %inImgBytes, unsigned char %outIm
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::round(image, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 
 	outBytes = (unsigned char*)malloc(outImgSize32f);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetFloats(outImgBytes);
 
 	Free();
@@ -415,13 +416,13 @@ int CuviArithmeticLogical::SHL(unsigned char %inImgBytes, int val, unsigned char
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::SHL(image, val, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 
 	Free();
@@ -441,13 +442,13 @@ int CuviArithmeticLogical::SHR(unsigned char %inImgBytes, int val, unsigned char
 	//Create a CuvuImage and fill it with data
 	CuviImage image, output;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::SHR(image, val, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	outBytes = (unsigned char*)malloc(outImgSize);
-	status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	SetBytes(outImgBytes);
 
 	Free();
@@ -464,8 +465,8 @@ int CuviArithmeticLogical::Sqrt(unsigned char %inData, unsigned char %outImgByte
 	//Create a CuvuImage and fill it with data
 	CuviImage image;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	CuviImage	image32f(image.size(), CUVI_DEPTH_32F, image.channels());
 
@@ -474,14 +475,14 @@ int CuviArithmeticLogical::Sqrt(unsigned char %inData, unsigned char %outImgByte
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = image32f.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = image32f.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		CuviImage output(image.size(), CUVI_DEPTH_8U, image.channels());
 		status = cuvi::dataExchange::convertScale(image32f, output, 1.0f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -497,22 +498,22 @@ int CuviArithmeticLogical::Subtract(unsigned char %img1, unsigned char %img2, un
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	cuvi::arithmeticLogical::subtract(image1, image2, output);
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	Free();
@@ -528,20 +529,20 @@ int CuviArithmeticLogical::Subtract(unsigned char %inImageBytes, int val, unsign
 
 	//Create CuviImages and fill with data
 	CuviImage image, output;
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	
 	cuvi::arithmeticLogical::subtract(val, image, output);
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	Free();
@@ -558,22 +559,22 @@ int CuviArithmeticLogical::Multiply(unsigned char %img1, unsigned char %img2, un
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::multiply(image1, image2, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	Free();
@@ -590,7 +591,7 @@ int CuviArithmeticLogical::Multiply(unsigned char %img1, int scalar, unsigned ch
 
 	//Create CuviImages and fill with data
 	CuviImage image, output;
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 	status = image.upload(inBytes, width * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	output = image * scalar;
@@ -598,12 +599,12 @@ int CuviArithmeticLogical::Multiply(unsigned char %img1, int scalar, unsigned ch
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -709,22 +710,22 @@ int CuviArithmeticLogical::Divide(unsigned char %img1, unsigned char %img2, unsi
 
 	//Create CuviImages and fill with data
 	CuviImage image1, image2, output;
-	status = image1.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image1.upload(inBytes1, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image2.upload(inBytes2, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image1.upload(inBytes1, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image2.upload(inBytes2, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::divide(image1, image2, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 
@@ -743,22 +744,22 @@ int CuviArithmeticLogical::Exp(unsigned char %inImgBytes, unsigned char %outImgB
 	//Create a CuvuImage and fill it with data
 	CuviImage image, image32f;
 
-	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.create(imgSize, containerBits, numChannels); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	status = cuvi::arithmeticLogical::exp(image, image32f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	if (usingFloats) {
 		pin_ptr<unsigned char> outPtr = &outImgBytes;
 		outBytes = (unsigned char*)malloc(outImgSize32f);
-		status = image32f.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = image32f.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetFloats(outImgBytes);
 	}
 	else {
 		CuviImage output(image.size(), CUVI_DEPTH_8U, image.channels());
 		status = cuvi::dataExchange::convertScale(image32f, output, 1.0f); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		outBytes = (unsigned char*)malloc(outImgSize);
-		status = output.download(outBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+		status = output.download(outBytes, CPUinputPitch); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 		SetBytes(outImgBytes);
 	}
 	
@@ -785,7 +786,7 @@ int CuviArithmeticLogical::ImgTo32(unsigned char %inImgBytes, unsigned char %out
 	status = cuvi::dataExchange::convertScale(image, image32f);	if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }//Divide pixel by 255 to normalize
 
 	outBytes = (unsigned char*)malloc(outImgSize32f);
-	status = image32f.download(outBytes, CPUinputPitch * 3);
+	status = image32f.download(outBytes, CPUinputPitch);
 	SetFloats(outFloats);
 }
 

@@ -27,7 +27,7 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         cuviColor = New CuviColorOps(3384, 2708)
-        cuviAL = New CuviArithmeticLogical(3384, 2708)
+        cuviAL = New CuviArithmeticLogical(3384, 2708, 1)
         cuviGT = New CuviGeometryTransform(3384, 2708)
 
         rect = New Rectangle(0, 0, 3384, 2708)
