@@ -9,6 +9,7 @@ Public Class Form1
     Dim inData As Byte()
     Dim inData2 As Byte()
     Dim img2 As Byte()
+    Dim img32f As Byte()
     Dim inData32f As Single()
     Dim outData As Byte()
     Dim outData32f As Single()
@@ -32,6 +33,7 @@ Public Class Form1
         rect = New Rectangle(0, 0, 3384, 2708)
         outData = New Byte(cuviColor.outImgSize) {}
         img2 = New Byte(cuviColor.outImgSize) {}
+        img32f = New Byte(cuviColor.outImgSize * 4) {}
 
         inData = My.Computer.FileSystem.ReadAllBytes("datasets/Fluorescence bytes")
         bmp = New Bitmap(3384, 2708, PixelFormat.Format24bppRgb)
@@ -131,8 +133,8 @@ Public Class Form1
     Private Sub Button9_Click(sender As Object, e As EventArgs) Handles btnCbrt.Click
         GetBytes()
         inData32f = New Single(cuviAL.outImgSize) {}
-        cuviAL.Img8to32(inData(0), inData32f(0))
-        cuviAL.cbrt(inData(0), outData(0))
+        'cuviAL.Img8to32(inData(0), inData32f(0))
+        cuviAL.cbrt(inData(0), outData(0), True)
         SetBytes()
     End Sub
 
@@ -166,5 +168,18 @@ Public Class Form1
             cuviAL.Multiply(inData(0), CInt(tbMultScalar.Text), outData(0))
             SetBytes()
         End If
+    End Sub
+
+    Private Sub Button2_Click_1(sender As Object, e As EventArgs) Handles Button2.Click
+        GetBytes()
+        cuviAL.Divide(inData(0), img2(0), outData(0))
+        SetBytes()
+    End Sub
+
+    Private Sub Button3_Click_1(sender As Object, e As EventArgs) Handles Button3.Click
+        GetBytes()
+        cuviAL.Exp(inData(0), outData(0), False)
+
+        SetBytes()
     End Sub
 End Class

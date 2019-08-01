@@ -16,15 +16,12 @@ CUVI::CUVI() {
 	bytesPerPixel = containerBits / 8;
 }
 
+//Calculates histogram values of an image to display and fills a buffer of int values.
 int CUVI::CalcHist(unsigned char %inImgBytes, unsigned int %histResult) {
 
 	CuviSize imgSize(width,height);
 	unsigned int *histArr;
 	GetBytes(inImgBytes);
-	
-	////Check that an image exists
-	//if(outBytes == NULL)
-	//	return -1;
 
 	CuviImage histImg;
 	status = histImg.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
@@ -43,6 +40,7 @@ int CUVI::CalcHist(unsigned char %inImgBytes, unsigned int %histResult) {
 	return 0;
 }
 
+//Returns int buffer size required to hold histogram values
 int CUVI::GetHistSize(unsigned char %inImgBytes) {
 	CuviSize imgSize(width, height);
 	GetBytes(inImgBytes);
@@ -57,7 +55,7 @@ int CUVI::GetHistSize(unsigned char %inImgBytes) {
 	return histBinCount;
 }
 
-
+//Fast Fourier Transform
 int CUVI::FFT2D(unsigned char %inImgBytes, unsigned char %outImgBytes) {
 	
 	CuviSize imgSize(width, height);
@@ -66,13 +64,14 @@ int CUVI::FFT2D(unsigned char %inImgBytes, unsigned char %outImgBytes) {
 	GetBytes(inImgBytes);
 
 	//Create a CuvuImage and fill it with data
-	CuviImage image, output, fft;
+	CuviImage image, channelImage, output;
 
 	status = image.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = image.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = image.upload(inBytes, width * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
-	cuvi::dataExchange::getChannel(image, output, 0);
-	status = cuvi::imageTransforms::fft2(output,fft); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	//Getting one channel to generate the fft
+	status = cuvi::dataExchange::getChannel(image, channelImage, 1); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
+	status = cuvi::imageTransforms::fft2(channelImage, output); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
 
 	outBytes = (unsigned char*)malloc(outImgSize);
 	status = output.download(outBytes, width * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
@@ -82,7 +81,7 @@ int CUVI::FFT2D(unsigned char %inImgBytes, unsigned char %outImgBytes) {
 	return 0;
 }
 
-
+//Adjust the size of the image
 void CUVI::SetSize(int w, int h){
 	width = w;
 	height = h;

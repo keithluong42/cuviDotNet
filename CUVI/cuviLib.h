@@ -45,12 +45,18 @@ namespace cuviLib {
 			int Abs(unsigned char %inBytes, unsigned char %outBytes);
 			int AbsDiff(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Add(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
-			int cbrt(unsigned char %inData, unsigned char %outImgBytes);	//Needs Img8to32
+			int cbrt(unsigned char %inData, unsigned char %outImgBytes, bool floatOut);
 			int NOT(unsigned char %inImgBytes, unsigned char %outImgBytes);
 			int AND(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Multiply(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
 			int Multiply(unsigned char %img1, int scalar, unsigned char %outImgBytes);
-			int Img8to32(unsigned char %inImgBytes, unsigned char %outImgBytes);	//TODO: fix this to convert images to 32f format for other functions
+			int Divide(unsigned char %img1, unsigned char %img2, unsigned char %outImgBytes);
+			int Exp(unsigned char %inImgBytes, unsigned char %outImgBytes, bool floatOut);
+			void UseFloats(bool set);
+			bool IsUsingFloats();
+
+		private:
+			bool usingFloats;
 	};
 
 	public ref class CuviGeometryTransform : public CUVI {

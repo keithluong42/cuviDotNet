@@ -1,7 +1,7 @@
-#CUVI.NET
+##CUVI.NET##
 .NET wrapper for CUVI image processing library
 
-##Build Instructions
+###Build Instructions###
 1.	Open the solution file in VS and set the build configuration to Release and x64
 2.	Right click the tester project and set it as startup project
 3.	Run the project

@@ -42,6 +42,8 @@ Partial Class Form1
         Me.btnMultiply = New System.Windows.Forms.Button()
         Me.Button1 = New System.Windows.Forms.Button()
         Me.tbMultScalar = New System.Windows.Forms.TextBox()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.Button3 = New System.Windows.Forms.Button()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -148,7 +150,7 @@ Partial Class Form1
         '
         'btnCbrt
         '
-        Me.btnCbrt.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.btnCbrt.BackColor = System.Drawing.SystemColors.ControlLight
         Me.btnCbrt.Location = New System.Drawing.Point(1206, 99)
         Me.btnCbrt.Name = "btnCbrt"
         Me.btnCbrt.Size = New System.Drawing.Size(75, 23)
@@ -194,7 +196,7 @@ Partial Class Form1
         '
         'Button1
         '
-        Me.Button1.BackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.Button1.BackColor = System.Drawing.SystemColors.ControlLight
         Me.Button1.Location = New System.Drawing.Point(1056, 215)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(75, 23)
@@ -209,11 +211,31 @@ Partial Class Form1
         Me.tbMultScalar.Size = New System.Drawing.Size(49, 20)
         Me.tbMultScalar.TabIndex = 17
         '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(1056, 244)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(75, 23)
+        Me.Button2.TabIndex = 18
+        Me.Button2.Text = "Divide"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(1056, 273)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(75, 23)
+        Me.Button3.TabIndex = 19
+        Me.Button3.Text = "Exp"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1307, 734)
+        Me.Controls.Add(Me.Button3)
+        Me.Controls.Add(Me.Button2)
         Me.Controls.Add(Me.tbMultScalar)
         Me.Controls.Add(Me.Button1)
         Me.Controls.Add(Me.btnMultiply)
@@ -257,4 +279,6 @@ Partial Class Form1
     Friend WithEvents btnMultiply As Button
     Friend WithEvents Button1 As Button
     Friend WithEvents tbMultScalar As TextBox
+    Friend WithEvents Button2 As Button
+    Friend WithEvents Button3 As Button
 End Class
