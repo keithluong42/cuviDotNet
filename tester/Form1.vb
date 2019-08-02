@@ -5,6 +5,7 @@ Public Class Form1
     Dim cuviColor As CuviColorOps
     Dim cuviAL As CuviArithmeticLogical
     Dim cuviGT As CuviGeometryTransform
+    Dim cuviStats As CuviImageStats
 
     Dim inData As Byte()
     Dim outData As Byte()
@@ -128,9 +129,9 @@ Public Class Form1
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles btnHistogram.Click
         GetBytes()
 
-        histSize = cuviColor.GetHistSize(inData(0))
+        histSize = cuviStats.GetHistSize(inData(0))
         histogram = New UInt32(histSize) {}
-        cuviColor.CalcHist(inData(0), histogram(0))
+        cuviStats.CalcHist(inData(0), histogram(0))
         PlotHistogram(Chart1)
 
     End Sub

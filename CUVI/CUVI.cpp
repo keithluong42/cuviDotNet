@@ -16,45 +16,6 @@ CUVI::CUVI() {
 	bytesPerPixel = containerBits / 8;
 }
 
-//Calculates histogram values of an image to display and fills a buffer of int values.
-int CUVI::CalcHist(unsigned char %inImgBytes, unsigned int %histResult) {
-
-	CuviSize imgSize(width,height);
-	unsigned int *histArr;
-	GetBytes(inImgBytes);
-
-	CuviImage histImg;
-	status = histImg.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = histImg.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	
-
-	CuviHistogram hist(histImg.type());
-
-	status = cuvi::imageStatistics::calcHist(histImg, hist); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-
-	histArr = hist.hist();
-
-	pin_ptr<unsigned int> outPtr = &histResult;
-	memcpy(outPtr, histArr, (histBinCount * sizeof(unsigned int)));
-	
-	return 0;
-}
-
-//Returns int buffer size required to hold histogram values
-int CUVI::GetHistSize(unsigned char %inImgBytes) {
-	CuviSize imgSize(width, height);
-	GetBytes(inImgBytes);
-	
-	CuviImage histImg;
-	status = histImg.create(imgSize, containerBits, 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	status = histImg.upload(inBytes, CPUinputPitch * 3); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	CuviHistogram hist(histImg.type());
-	cuvi::imageStatistics::calcHist(histImg, hist); if (CUVI_SUCCESS != status) { cout << "CUVI Error: " << status << endl;	return (int)status; }
-	histBinCount = hist.binCount();
-
-	return histBinCount;
-}
-
 //Fast Fourier Transform
 int CUVI::FFT2D(unsigned char %inImgBytes, unsigned char %outImgBytes) {
 	

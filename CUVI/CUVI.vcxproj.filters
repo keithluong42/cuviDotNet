@@ -86,6 +86,9 @@
     <ClCompile Include="cuviGeomTransforms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cuviImageStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\lib\cuvi64_155.lib" />

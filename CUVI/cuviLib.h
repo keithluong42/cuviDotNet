@@ -7,11 +7,9 @@ namespace cuviLib {
 			int outImgSize;
 			int histBinCount;
 			CUVI();
-			int CalcHist(unsigned char %inImgBytes, unsigned int %histResult);
+			
 			int FFT2D(unsigned char %inImgBytes, unsigned char %outImgBytes);
 			void SetSize(int w, int h);
-			int GetHistSize(unsigned char %inImgBytes);
-
 
 		protected:
 			int inImgSize;
@@ -85,6 +83,14 @@ namespace cuviLib {
 		public:
 			CuviGeometryTransform(int w, int h);
 			int Crop(unsigned char %src, unsigned char %dest, int top, int bottom, int left, int right, int size);
+	};
+
+	public ref class CuviImageStats : public CUVI {
+		public:
+			CuviImageStats(int w, int h, int numChannels);
+			int CalcHist(unsigned char %inImgBytes, unsigned int %histResult);
+			int GetHistSize(unsigned char %inImgBytes);
+
 	};
 }
 

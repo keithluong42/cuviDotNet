@@ -187,6 +187,7 @@
     <ClCompile Include="cuviArithmeticLogical.cpp" />
     <ClCompile Include="cuviColorOps.cpp" />
     <ClCompile Include="cuviGeomTransforms.cpp" />
+    <ClCompile Include="cuviImageStats.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
